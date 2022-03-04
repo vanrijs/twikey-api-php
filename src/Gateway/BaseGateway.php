@@ -13,40 +13,13 @@ use const Twikey\Api\TWIKEY_DEBUG;
 abstract class BaseGateway
 {
     /**
-     * @var ClientInterface
+     * @var Twikey
      */
-    private ClientInterface $httpClient;
+    protected Twikey $twikey;
 
-    private string $endpoint;
-    private string $apikey;
-
-    public function __construct(ClientInterface $httpClient, string $endpoint, string $apikey)
+    public function __construct(Twikey $twikey)
     {
-        $this->httpClient = $httpClient;
-        $this->endpoint = $endpoint;
-        $this->apikey = $apikey;
-    }
-
-    /**
-     * @param string $method
-     * @param string $uri
-     * @param array $options
-     * @return ResponseInterface
-     * @throws ClientExceptionInterface
-     */
-    public function request(string $method, string $uri = '', array $options = [], string $lang = 'en'): ResponseInterface
-    {
-        $fulluri = sprintf("%s/%s", $this->endpoint, $uri);
-        $headers = $options['headers'] ?? [];
-        $headers = array_merge($headers, [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/x-www-form-urlencoded',
-            "User-Agent" => "twikey-php/v" . Twikey::VERSION,
-            "Accept-Language" => $lang,
-            "Authorization" => 'Bearer ' . $this->apikey
-        ]);
-        $options['headers'] = $headers;
-        return $this->httpClient->request($method, $fulluri, $options);
+        $this->twikey = $twikey;
     }
 
     /**

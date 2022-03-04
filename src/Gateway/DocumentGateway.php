@@ -3,9 +3,8 @@ declare(strict_types=1);
 namespace Twikey\Api\Gateway;
 
 use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Client\ClientInterface;
 use Twikey\Api\Callback\DocumentCallback;
-use Twikey\Api\TwikeyException;
+use Twikey\Api\Exception\TwikeyException;
 
 class DocumentGateway extends BaseGateway
 {
@@ -16,7 +15,7 @@ class DocumentGateway extends BaseGateway
      */
     public function create($data, $lang = 'en')
     {
-        $response = $this->request('POST', '/creditor/invite', ['form_params' => $data], $lang);
+        $response = $this->twikey->request('POST', '/creditor/invite', ['form_params' => $data], $lang);
         $server_output = $this->checkResponse($response, "Creating a new mandate!");
         return json_decode($server_output);
     }
@@ -27,7 +26,7 @@ class DocumentGateway extends BaseGateway
      */
     public function sign($data, $lang = 'en')
     {
-        $response = $this->request('POST', '/creditor/sign', ['form_params' => $data], $lang);
+        $response = $this->twikey->request('POST', '/creditor/sign', ['form_params' => $data], $lang);
         $server_output = $this->checkResponse($response, "Signing a mandate!");
         return json_decode($server_output);
     }
@@ -38,7 +37,7 @@ class DocumentGateway extends BaseGateway
      */
     public function update($data, $lang = 'en')
     {
-        $response = $this->request('POST', "/creditor/mandate/update", ['form_params' => $data], $lang);
+        $response = $this->twikey->request('POST', "/creditor/mandate/update", ['form_params' => $data], $lang);
         $server_output = $this->checkResponse($response, "Update a mandate!");
         return json_decode($server_output);
     }
@@ -49,7 +48,7 @@ class DocumentGateway extends BaseGateway
      */
     public function cancel($mndtId, $rsn, $lang = 'en')
     {
-        $response = $this->request('DELETE', sprintf("/creditor/mandate?mndtId=%s&rsn=%s", $mndtId, $rsn), [], $lang);
+        $response = $this->twikey->request('DELETE', sprintf("/creditor/mandate?mndtId=%s&rsn=%s", $mndtId, $rsn), [], $lang);
         $server_output = $this->checkResponse($response, "Cancel a mandate!");
         return json_decode($server_output);
     }
@@ -62,7 +61,7 @@ class DocumentGateway extends BaseGateway
     public function feed(DocumentCallback $callback, $lang = 'en')
     {
         do {
-            $response = $this->request('GET', "/creditor/mandate", [], $lang);
+            $response = $this->twikey->request('GET', "/creditor/mandate", [], $lang);
             $server_output = $this->checkResponse($response, "Retrieving mandate feed!");
             $updates = json_decode($server_output);
             if ($callback != null) {
@@ -93,7 +92,7 @@ class DocumentGateway extends BaseGateway
      */
     public function get(string $mndtId, bool $force = false, $lang = 'en')
     {
-        $response = $this->request('GET', sprintf("/creditor/mandate/detail?mndtId=%s&force=%s", $mndtId, $force), [], $lang);
+        $response = $this->twikey->request('GET', sprintf("/creditor/mandate/detail?mndtId=%s&force=%s", $mndtId, $force), [], $lang);
         $server_output = $this->checkResponse($response, "Get mandate details!");
         return json_decode($server_output);
     }
